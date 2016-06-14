@@ -1,17 +1,15 @@
 package com.fuck.wechatmsg;
 
+import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.JsonReader;
 import android.view.View;
-import android.widget.Button;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import org.json.JSONObject;
-
+import java.io.DataOutputStream;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
@@ -25,11 +23,30 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.readBtn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                DBOpenHelper db = new DBOpenHelper(v.getContext(),"m.db");
-                List<Message> list = db.getAllMessage();
+                try {
+                    Utils.mvDb();
+                } catch (Exception e) {
+                   msgBox.setText(e.getMessage());
+                    return;
+                }
+                List<Message> list = Utils.getAllMessage();
                 Gson gson = new GsonBuilder().setPrettyPrinting().create();
                 msgBox.setText(gson.toJson(list));
             }
         });
+
+        findViewById(R.id.clearBtn).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try{
+                    Utils.clearDb();
+                    msgBox.setText("Clear success");
+                }catch (Exception e){
+                    msgBox.setText(e.getMessage());
+                }
+            }
+        });
     }
+
+
 }
